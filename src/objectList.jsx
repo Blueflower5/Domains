@@ -10,28 +10,43 @@ import {
 const ObjectList = () => {
   const dispatch = useDispatch();
   const objects = useSelector((state) => state.objects.data);
-  // const status = useSelector((state) => state.objects.status);
 
-  // State to store user-entered URL
+  // States
   const [userUrl, setUserUrl] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  // Validate domain input format
+  const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/.*)?$/i;
+
+  // Filter objects based on searchQuery
   const filteredObjects = objects.filter((domain) =>
     domain.domain.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  const sortedObjects = [...filteredObjects].sort((a, b) => {
-    if (sortOrder === "asc") {
-      return a.domain.localeCompare(b.domain); // Ascending order
-    } else {
-      return b.domain.localeCompare(a.domain); // Descending order
-    }
-  });
+
+  // Sort objects based on sortOrder
+  const sortedObjects = [...filteredObjects].sort((a, b) =>
+    sortOrder === "asc"
+      ? a.domain.localeCompare(b.domain)
+      : b.domain.localeCompare(a.domain)
+  );
 
   useEffect(() => {
-    {
-      dispatch(fetchObjects());
-    }
+    dispatch(fetchObjects());
   }, [dispatch]);
+
+  // Handle domain input validation
+  const handleInputChange = (e) => {
+    const inputValue = e.target.value;
+    setUserUrl(inputValue);
+
+    if (!urlRegex.test(inputValue)) {
+      setErrorMessage("❌ Invalid domain format! Please enter a valid URL.");
+    } else {
+      setErrorMessage("✅ Valid domain format!");
+    }
+  };
 
   return (
     <>
@@ -44,6 +59,7 @@ const ObjectList = () => {
           Sort by Name ({sortOrder === "asc" ? "Descending" : "Ascending"})
         </button>
 
+        {/* Search Bar */}
         <div>
           <input
             type="text"
@@ -53,30 +69,37 @@ const ObjectList = () => {
           />
         </div>
       </div>
+
       <ul id="domainList">Rows will be added dynamically here</ul>
+
+      {/* Domain Input Validation */}
       <div>
         <h1>Objects List</h1>
 
-        {/* Input field for user to enter a URL */}
         <input
           type="text"
           placeholder="Enter domain URL"
           value={userUrl}
-          onChange={(e) => setUserUrl(e.target.value)}
+          onChange={handleInputChange}
         />
+        <p
+          style={{ color: errorMessage.includes("Invalid") ? "red" : "green" }}
+        >
+          {errorMessage}
+        </p>
 
-        {/* Button to send the inputted URL to API */}
         <button
           onClick={() => {
-            if (userUrl.trim() !== "") {
+            if (userUrl.trim() !== "" && urlRegex.test(userUrl)) {
               dispatch(
                 addObject({
                   domain: userUrl,
                   status: "Pending",
-                  isActive: false, // Use the user-entered URL
+                  isActive: false,
                 })
               );
               setUserUrl(""); // Clear input after adding
+              setErrorMessage(""); // Reset validation message
             } else {
               alert("Please enter a valid domain URL.");
             }
@@ -85,6 +108,7 @@ const ObjectList = () => {
           Add Object
         </button>
 
+        {/* Filtered & Sorted Domains */}
         <div
           style={{
             marginTop: "20px",
@@ -98,7 +122,7 @@ const ObjectList = () => {
               {sortedObjects.map((obj) => (
                 <li key={obj.id}>
                   <strong>Domain:</strong> {obj.domain} |{" "}
-                  <strong>Status:</strong> {obj.status} |{" "}
+                  <strong>Status:</strong> {obj.status} |
                   <strong>Active:</strong> {obj.isActive ? "Yes" : "No"}
                   <button
                     onClick={() =>
@@ -120,10 +144,12 @@ const ObjectList = () => {
           )}
         </div>
       </div>
+
+      {/* Add Domain Section */}
       <div>Add Domain</div>
-      <input type="text"></input>
+      <input type="text" />
       <div>
-        <button>cancel</button>
+        <button>Cancel</button>
         <button>Add</button>
       </div>
     </>
