@@ -17,20 +17,8 @@ const ObjectList = () => {
   const [sortOrder, setSortOrder] = useState("asc");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Validate domain input format
+  // Regex to validate domain format
   const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/.*)?$/i;
-
-  // Filter objects based on searchQuery
-  const filteredObjects = objects.filter((domain) =>
-    domain.domain.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  // Sort objects based on sortOrder
-  const sortedObjects = [...filteredObjects].sort((a, b) =>
-    sortOrder === "asc"
-      ? a.domain.localeCompare(b.domain)
-      : b.domain.localeCompare(a.domain)
-  );
 
   useEffect(() => {
     dispatch(fetchObjects());
@@ -40,11 +28,48 @@ const ObjectList = () => {
   const handleInputChange = (e) => {
     const inputValue = e.target.value;
     setUserUrl(inputValue);
+    setErrorMessage(
+      urlRegex.test(inputValue)
+        ? "✅ Valid domain format!"
+        : "❌ Invalid domain format!"
+    );
+  };
 
-    if (!urlRegex.test(inputValue)) {
-      setErrorMessage("❌ Invalid domain format! Please enter a valid URL.");
-    } else {
-      setErrorMessage("✅ Valid domain format!");
+  // Handle domain creation (Starts as "Not Verified")
+  const handleAddDomain = () => {
+    if (userUrl.trim() === "" || !urlRegex.test(userUrl)) {
+      alert("Please enter a valid domain URL.");
+      return;
+    }
+
+    dispatch(
+      addObject({
+        domain: userUrl,
+        status: "Not Verified", // Initial status when created
+        isActive: false,
+      })
+    );
+    setUserUrl(""); // Clear input after adding
+    setErrorMessage(""); // Reset validation message
+  };
+
+  // Handle updating object status (Pending → Verified based on domain availability)
+  const handleUpdate = async (obj) => {
+    dispatch(updateObject({ ...obj, status: "Pending" }));
+
+    try {
+      // Try fetching the domain directly
+      const response = await fetch(obj.domain, {
+        method: "GET",
+        mode: "no-cors",
+      });
+
+      // If the request succeeds, mark domain as active
+      dispatch(
+        updateObject({ ...obj, status: "Verified", isActive: response.ok })
+      );
+    } catch (error) {
+      dispatch(updateObject({ ...obj, status: "Verified", isActive: false }));
     }
   };
 
@@ -52,7 +77,6 @@ const ObjectList = () => {
     <>
       <div>Domains</div>
       <div>
-        <button>+ Add Domain</button>
         <button
           onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
         >
@@ -60,97 +84,49 @@ const ObjectList = () => {
         </button>
 
         {/* Search Bar */}
-        <div>
-          <input
-            type="text"
-            placeholder="Search domains..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-      </div>
-
-      <ul id="domainList">Rows will be added dynamically here</ul>
-
-      {/* Domain Input Validation */}
-      <div>
-        <h1>Objects List</h1>
-
         <input
           type="text"
-          placeholder="Enter domain URL"
-          value={userUrl}
-          onChange={handleInputChange}
+          placeholder="Search domains..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
         />
-        <p
-          style={{ color: errorMessage.includes("Invalid") ? "red" : "green" }}
-        >
-          {errorMessage}
-        </p>
-
-        <button
-          onClick={() => {
-            if (userUrl.trim() !== "" && urlRegex.test(userUrl)) {
-              dispatch(
-                addObject({
-                  domain: userUrl,
-                  status: "Pending",
-                  isActive: false,
-                })
-              );
-              setUserUrl(""); // Clear input after adding
-              setErrorMessage(""); // Reset validation message
-            } else {
-              alert("Please enter a valid domain URL.");
-            }
-          }}
-        >
-          Add Object
-        </button>
-
-        {/* Filtered & Sorted Domains */}
-        <div
-          style={{
-            marginTop: "20px",
-            padding: "10px",
-            border: "1px solid gray",
-          }}
-        >
-          <h3>Filtered & Sorted Domains:</h3>
-          {sortedObjects.length > 0 ? (
-            <ul>
-              {sortedObjects.map((obj) => (
-                <li key={obj.id}>
-                  <strong>Domain:</strong> {obj.domain} |{" "}
-                  <strong>Status:</strong> {obj.status} |
-                  <strong>Active:</strong> {obj.isActive ? "Yes" : "No"}
-                  <button
-                    onClick={() =>
-                      dispatch(
-                        updateObject({ ...obj, status: "Updated Status" })
-                      )
-                    }
-                  >
-                    Update
-                  </button>
-                  <button onClick={() => dispatch(deleteObject(obj.id))}>
-                    Delete
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No matching domains found.</p>
-          )}
-        </div>
       </div>
 
-      {/* Add Domain Section */}
-      <div>Add Domain</div>
-      <input type="text" />
-      <div>
-        <button>Cancel</button>
-        <button>Add</button>
+      {/* Domain Input Validation */}
+      <h1>Objects List</h1>
+      <input
+        type="text"
+        placeholder="Enter domain URL"
+        value={userUrl}
+        onChange={handleInputChange}
+      />
+      <p style={{ color: errorMessage.includes("Invalid") ? "red" : "green" }}>
+        {errorMessage}
+      </p>
+      <button onClick={handleAddDomain}>Add Object</button>
+
+      {/* Filtered & Sorted Domains */}
+      <div
+        style={{ marginTop: "20px", padding: "10px", border: "1px solid gray" }}
+      >
+        <h3>Filtered & Sorted Domains:</h3>
+        {objects.length > 0 ? (
+          <ul>
+            {objects.map((obj) => (
+              <li key={obj.id}>
+                <strong>Domain:</strong> {obj.domain} | <strong>Status:</strong>{" "}
+                {obj.status} |<strong>Active:</strong>{" "}
+                {obj.isActive ? "Yes" : "No"}
+                <button onClick={() => handleUpdate(obj)}>Update</button>
+                <button onClick={() => dispatch(deleteObject(obj.id))}>
+                  Delete
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No matching domains found.</p>
+        )}
       </div>
     </>
   );
