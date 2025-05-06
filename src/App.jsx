@@ -1,3 +1,5 @@
+import ObjectList from "./objectList";
+
 function App() {
   return (
     <>
@@ -8,7 +10,8 @@ function App() {
         <span>search</span>
       </div>
       <ul id="domainList">Rows will be added dynamically here</ul>
-      {/* 
+      <ObjectList />
+      {/*       
 <script>
   // Replace with the actual API URL
   fetch("https://example.com/api/domains")
