@@ -14,6 +14,18 @@ const ObjectList = () => {
 
   // State to store user-entered URL
   const [userUrl, setUserUrl] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const filteredObjects = objects.filter((domain) =>
+    domain.domain.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  const sortedObjects = [...filteredObjects].sort((a, b) => {
+    if (sortOrder === "asc") {
+      return a.domain.localeCompare(b.domain); // Ascending order
+    } else {
+      return b.domain.localeCompare(a.domain); // Descending order
+    }
+  });
 
   useEffect(() => {
     {
@@ -26,8 +38,20 @@ const ObjectList = () => {
       <div>Domains</div>
       <div>
         <button>+ Add Domain</button>
-        <span>sort</span>
-        <span>search</span>
+        <button
+          onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+        >
+          Sort by Name ({sortOrder === "asc" ? "Descending" : "Ascending"})
+        </button>
+
+        <div>
+          <input
+            type="text"
+            placeholder="Search domains..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
       </div>
       <ul id="domainList">Rows will be added dynamically here</ul>
       <div>
@@ -61,25 +85,40 @@ const ObjectList = () => {
           Add Object
         </button>
 
-        <ul>
-          {objects.map((obj) => (
-            <li key={obj.id}>
-              <strong>Domain:</strong> {obj.domain} | <strong>Status:</strong>{" "}
-              {obj.status} |<strong>Active:</strong>{" "}
-              {obj.isActive ? "Yes" : "No"}
-              <button
-                onClick={() =>
-                  dispatch(updateObject({ ...obj, status: "Updated Status" }))
-                }
-              >
-                Update
-              </button>
-              <button onClick={() => dispatch(deleteObject(obj.id))}>
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
+        <div
+          style={{
+            marginTop: "20px",
+            padding: "10px",
+            border: "1px solid gray",
+          }}
+        >
+          <h3>Filtered & Sorted Domains:</h3>
+          {sortedObjects.length > 0 ? (
+            <ul>
+              {sortedObjects.map((obj) => (
+                <li key={obj.id}>
+                  <strong>Domain:</strong> {obj.domain} |{" "}
+                  <strong>Status:</strong> {obj.status} |{" "}
+                  <strong>Active:</strong> {obj.isActive ? "Yes" : "No"}
+                  <button
+                    onClick={() =>
+                      dispatch(
+                        updateObject({ ...obj, status: "Updated Status" })
+                      )
+                    }
+                  >
+                    Update
+                  </button>
+                  <button onClick={() => dispatch(deleteObject(obj.id))}>
+                    Delete
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No matching domains found.</p>
+          )}
+        </div>
       </div>
       <div>Add Domain</div>
       <input type="text"></input>
