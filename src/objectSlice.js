@@ -36,7 +36,7 @@ const objectSlice = createSlice({
 export const fetchObjects = createAsyncThunk("objects/fetch", async () => {
   const response = await fetch(API_URL);
   const data = await response.json();
-  console.log("API Response:", data); // Debugging
+  // console.log("API Response:", data); // Debugging
   return data;
 });
 

@@ -10,7 +10,7 @@ import {
 const ObjectList = () => {
   const dispatch = useDispatch();
   const objects = useSelector((state) => state.objects.data);
-  const status = useSelector((state) => state.objects.status);
+  // const status = useSelector((state) => state.objects.status);
 
   // State to store user-entered URL
   const [userUrl, setUserUrl] = useState("");
