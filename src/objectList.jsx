@@ -9,7 +9,17 @@ const ObjectList = ({ setOpen }) => {
   // States
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
+  // Filter objects based on searchQuery
+  const filteredObjects = objects.filter((domain) =>
+    domain.domain.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
+  // Sort objects based on sortOrder
+  const sortedObjects = [...filteredObjects].sort((a, b) =>
+    sortOrder === "asc"
+      ? a.domain.localeCompare(b.domain)
+      : b.domain.localeCompare(a.domain)
+  );
   useEffect(() => {
     dispatch(fetchObjects());
   }, [dispatch]);
@@ -83,17 +93,27 @@ const ObjectList = ({ setOpen }) => {
 
       {/* Filtered & Sorted Domains */}
       <div
-        style={{ marginTop: "20px", padding: "10px", border: "1px solid gray" }}
+        style={{
+          marginTop: "20px",
+          padding: "10px",
+          border: "1px solid gray",
+        }}
       >
         <h3>Filtered & Sorted Domains:</h3>
-        {objects.length > 0 ? (
+        {sortedObjects.length > 0 ? (
           <ul>
-            {objects.map((obj) => (
+            {sortedObjects.map((obj) => (
               <li key={obj.id}>
                 <strong>Domain:</strong> {obj.domain} | <strong>Status:</strong>{" "}
                 {obj.status} |<strong>Active:</strong>{" "}
                 {obj.isActive ? "Yes" : "No"}
-                <button onClick={() => handleUpdate(obj)}>Update</button>
+                <button
+                  onClick={() =>
+                    dispatch(updateObject({ ...obj, status: "Updated Status" }))
+                  }
+                >
+                  Update
+                </button>
                 <button onClick={() => dispatch(deleteObject(obj.id))}>
                   Delete
                 </button>

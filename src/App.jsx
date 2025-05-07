@@ -46,7 +46,7 @@ function App() {
         open={open}
         setOpen={setOpen}
         errorMessage={errorMessage}
-        setErrorMessage={setErrorMessage}
+        // setErrorMessage={setErrorMessage}
         handleInputChange={handleInputChange}
         handleAddDomain={handleAddDomain}
         userUrl={userUrl}
