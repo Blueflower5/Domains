@@ -1,57 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchObjects,
-  addObject,
-  updateObject,
-  deleteObject,
-} from "./objectSlice";
+import { fetchObjects, updateObject, deleteObject } from "./objectSlice";
 
-const ObjectList = () => {
+const ObjectList = ({ setOpen }) => {
   const dispatch = useDispatch();
   const objects = useSelector((state) => state.objects.data);
 
   // States
-  const [userUrl, setUserUrl] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [errorMessage, setErrorMessage] = useState("");
-
-  // Regex to validate domain format
-  const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/.*)?$/i;
 
   useEffect(() => {
     dispatch(fetchObjects());
   }, [dispatch]);
 
-  // Handle domain input validation
-  const handleInputChange = (e) => {
-    const inputValue = e.target.value;
-    setUserUrl(inputValue);
-    setErrorMessage(
-      urlRegex.test(inputValue)
-        ? "✅ Valid domain format!"
-        : "❌ Invalid domain format!"
-    );
-  };
-
   // Handle domain creation (Starts as "Not Verified")
-  const handleAddDomain = () => {
-    if (userUrl.trim() === "" || !urlRegex.test(userUrl)) {
-      alert("Please enter a valid domain URL.");
-      return;
-    }
-
-    dispatch(
-      addObject({
-        domain: userUrl,
-        status: "Not Verified", // Initial status when created
-        isActive: false,
-      })
-    );
-    setUserUrl(""); // Clear input after adding
-    setErrorMessage(""); // Reset validation message
-  };
 
   // Handle updating object status (Pending → Verified based on domain availability)
   const handleUpdate = async (obj) => {
@@ -75,10 +38,13 @@ const ObjectList = () => {
 
   return (
     <>
-      <div>Domains</div>
-      <div>
+      <div className="text-center text-yellow-500 font-semibold uppercase text-2xl">
+        Domains
+      </div>
+      <div className="flex space-x-2">
         <button
           onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+          className="bg-gray-300 px-4 py-2"
         >
           Sort by Name ({sortOrder === "asc" ? "Descending" : "Ascending"})
         </button>
@@ -89,12 +55,22 @@ const ObjectList = () => {
           placeholder="Search domains..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          className="bg-gray-300 px-4 py-2"
         />
+        <button
+          onClick={() => setOpen(true)}
+          className="bg-blue-500 text-white px-4 py-2 ml-auto"
+        >
+          ADD DOMAIN
+        </button>
       </div>
 
       {/* Domain Input Validation */}
-      <h1>Objects List</h1>
-      <input
+      <h1 className="text-center text-blue-100 font-semibold text-xl bg-yellow-100 uppercase tracking-[5px]">
+        Objects List
+      </h1>
+
+      {/* <input
         type="text"
         placeholder="Enter domain URL"
         value={userUrl}
@@ -103,7 +79,7 @@ const ObjectList = () => {
       <p style={{ color: errorMessage.includes("Invalid") ? "red" : "green" }}>
         {errorMessage}
       </p>
-      <button onClick={handleAddDomain}>Add Object</button>
+      <button onClick={handleAddDomain}>Add Object</button> */}
 
       {/* Filtered & Sorted Domains */}
       <div
