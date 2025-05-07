@@ -5,17 +5,48 @@ import {
   DialogTitle,
   TransitionChild,
 } from "@headlessui/react";
+import { addObject } from "./objectSlice";
+import { useDispatch } from "react-redux";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
 
-export default function Drawer({
-  open,
-  setOpen,
-  errorMessage,
-  //   setErrorMessage,
-  handleInputChange,
-  handleAddDomain,
-  userUrl,
-}) {
+export default function Drawer({ open, setOpen }) {
+  const urlRegex = /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/.*)?$/i;
+  const [errorMessage, setErrorMessage] = useState("");
+  const [userUrl, setUserUrl] = useState("");
+  const dispatch = useDispatch();
+
+  // Handle domain input validation
+  const handleInputChange = (e) => {
+    const inputValue = e.target.value;
+    setUserUrl(inputValue);
+    setErrorMessage(
+      urlRegex.test(inputValue)
+        ? "✅ Valid domain format!"
+        : "❌ Invalid domain format!"
+    );
+  };
+  const handleAddDomain = () => {
+    if (userUrl.trim() === "" || !urlRegex.test(userUrl)) {
+      alert("Please enter a valid domain URL.");
+      return;
+    }
+
+    dispatch(
+      addObject({
+        domain: userUrl,
+        status: "Not Verified", // Initial status when created
+        isActive: false,
+      })
+    );
+    setUserUrl(""); // Clear input after adding
+    setErrorMessage(""); // Reset validation message
+  };
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleAddDomain(); // Trigger the add domain action on Enter key press
+    }
+  };
   return (
     <Dialog open={open} onClose={setOpen} className="relative z-10">
       <DialogBackdrop
@@ -55,6 +86,7 @@ export default function Drawer({
                     placeholder="Enter domain URL"
                     value={userUrl}
                     onChange={handleInputChange}
+                    onKeyDown={handleKeyPress}
                   />
                   <p
                     style={{
