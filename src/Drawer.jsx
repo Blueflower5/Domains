@@ -54,9 +54,9 @@ export default function Drawer({ open, setOpen }) {
         className="fixed inset-0 bg-gray-500/75 transition-opacity duration-500 ease-in-out data-closed:opacity-0"
       />
 
-      <div className="fixed inset-0 overflow-hidden">
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+      <div className="fixed inset-0 overflow-hidden ">
+        <div className="absolute inset-0 overflow-hidden ">
+          <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 ">
             <DialogPanel
               transition
               className="pointer-events-auto relative w-screen max-w-md transform transition duration-500 ease-in-out data-closed:translate-x-full sm:duration-700"
@@ -66,7 +66,7 @@ export default function Drawer({ open, setOpen }) {
                   <button
                     type="button"
                     onClick={() => setOpen(false)}
-                    className="relative rounded-md text-gray-300 hover:text-white focus:ring-2 focus:ring-white focus:outline-hidden"
+                    className=" relative rounded-md text-gray-300 hover:text-white focus:ring-2 focus:ring-white focus:outline-hidden"
                   >
                     <span className="absolute -inset-2.5" />
                     <span className="sr-only">Close panel</span>
@@ -74,9 +74,9 @@ export default function Drawer({ open, setOpen }) {
                   </button>
                 </div>
               </TransitionChild>
-              <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
+              <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl ">
                 <div className="px-4 sm:px-6">
-                  <DialogTitle className="text-base font-semibold text-gray-900">
+                  <DialogTitle className="text-3xl font-semibold text-cyan-300 h-10 text-center  ">
                     Add Domain
                   </DialogTitle>
                 </div>
@@ -88,7 +88,7 @@ export default function Drawer({ open, setOpen }) {
                     onChange={handleInputChange}
                     onKeyDown={handleKeyPress}
                     tabIndex="0"
-                    className="bg-amber-400 h-20 w-100"
+                    className="bg-ray-400 h-10 w-100 text-lg bg-teal-400"
                   />
                   <p
                     style={{
@@ -101,7 +101,7 @@ export default function Drawer({ open, setOpen }) {
                     className="bg-lime-300 h-10 w-100"
                     onClick={handleAddDomain}
                   >
-                    Click To Add Domain URL
+                    ADD
                   </button>
                 </div>
               </div>

@@ -52,33 +52,33 @@ const ObjectList = ({ setOpen }) => {
       <div className="text-center text-orange-500 font-semibold uppercase text-3xl">
         هدف پلاس
       </div>
-      <div className="mt-10 flex items-center justify-between bg-sky-500  ">
+      <div className="mt-10 flex items-center justify-between ">
         <div className="relative">
           <input
             type="text"
             placeholder="Search domains..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 p-2 border border-gray-300 text-xs md:text-base"
+            className="w-full pl-10 p-2 border border-gray-300 text-xs md:text-base bg-slate-500 text-white"
           />
           <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
         </div>
 
         <button
           onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-          className=" px-4 py-2 border border-gray-800 text-xs md:text-base"
+          className=" px-4 py-2 border border-gray-800 text-xs md:text-base bg-gray-600 text-white"
         >
           Sort by Name ({sortOrder === "asc" ? "Descending" : "Ascending"})
         </button>
         <button
           onClick={() => setOpen(true)}
-          className=" text-white px-4 py-2 ml-auto bg-pink-300 text-xs md:text-base"
+          className=" text-white px-4 py-2 ml-auto bg-cyan-300 text-xs md:text-base"
         >
           ADD DOMAIN
         </button>
       </div>
-      <div className="bg-sky-700 mt-10">
-        <h1 className=" text-center text-white font-semibold text-3xl bg-yellow-400 uppercase tracking-[5px]">
+      <div className=" mt-10">
+        <h1 className=" text-center  font-semibold text-3xl uppercase tracking-[5px]">
           Domains List
         </h1>
       </div>
@@ -94,17 +94,25 @@ const ObjectList = ({ setOpen }) => {
       </p>
       <button onClick={handleAddDomain}>Add Object</button> */}
       {/* Filtered & Sorted Domains */}
-      <div className="overflow-y-auto max-h-[600px]">
+      <div className="overflow-y-auto max-h-[600px] flex justify-between">
         <table
           className="table-fixed border-collapse border border-gray-300 w-full table-layout: auto 
         text-gray-300"
         >
-          <thead className="sticky top-0 z-10">
-            <tr className="bg-orange-500 ">
-              <th className="text-left p-2 text-sm md:text-base">Domain URL</th>
-              <th className="p-2 text-sm md:text-base">Verification</th>
-              <th className="p-2 text-sm md:text-base">Activation</th>
-              <th className="text-right p-2 text-sm md:text-base">Actions</th>
+          <thead className="sticky top-0 z-10 ">
+            <tr className="bg-teal-500 ">
+              <th className="text-left p-2 text-sm md:text-base w-1/2  ">
+                Domain URL
+              </th>
+              <th className="p-2 text-right text-sm md:text-base w-1/6 ">
+                Verification
+              </th>
+              <th className="p-2 text-right text-sm md:text-base w-1/6 ">
+                Activation
+              </th>
+              <th className="text-right p-2 text-sm md:text-base w-1/6 ">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -114,11 +122,29 @@ const ObjectList = ({ setOpen }) => {
                   key={obj.id}
                   className="border border-gray-300 bg-slate-700"
                 >
-                  <td className="p-2 text-sm md:text-base">{obj.domain}</td>
-                  <td className="text-center p-2 text-sm md:text-base">
+                  <td
+                    className={`p-2 text-sm md:text-base break-words ${
+                      obj.status === "Verified" && obj.isActive
+                        ? "text-green-700 font-bold"
+                        : "text-white"
+                    }`}
+                  >
+                    {obj.domain}
+                  </td>
+                  <td
+                    className={`text-center p-2 text-sm md:text-base text-right ${
+                      obj.status === "Verified"
+                        ? "text-green-500"
+                        : "text-red-500"
+                    }`}
+                  >
                     {obj.status}
                   </td>
-                  <td className="text-center p-2 text-sm md:text-base">
+                  <td
+                    className={`text-center p-2 text-sm md:text-base text-right ${
+                      obj.isActive ? "text-green-500" : "text-red-500"
+                    }`}
+                  >
                     {obj.isActive ? "Yes" : "No"}
                   </td>
                   <td className="text-right p-2">
@@ -140,7 +166,10 @@ const ObjectList = ({ setOpen }) => {
               ))
             ) : (
               <tr>
-                <td colSpan="4" className="text-center p-2 bg-red-600">
+                <td
+                  colSpan="4"
+                  className="text-center p-2 text-red-600 bg-cyan-950"
+                >
                   No matching domains found.
                 </td>
               </tr>
