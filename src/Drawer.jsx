@@ -22,8 +22,8 @@ export default function Drawer({ open, setOpen }) {
     setUserUrl(inputValue);
     setErrorMessage(
       urlRegex.test(inputValue)
-        ? "✅ Valid domain format!"
-        : "❌ Invalid domain format!"
+        ? "✅ آدرس صحیح وارد شده است"
+        : "❌ لطفا آدرس را به صورت صحیح وارد کنید"
     );
   };
   const handleAddDomain = () => {
@@ -87,6 +87,8 @@ export default function Drawer({ open, setOpen }) {
                     value={userUrl}
                     onChange={handleInputChange}
                     onKeyDown={handleKeyPress}
+                    tabIndex="0"
+                    className="bg-amber-400 h-20 w-100"
                   />
                   <p
                     style={{
@@ -95,7 +97,12 @@ export default function Drawer({ open, setOpen }) {
                   >
                     {errorMessage}
                   </p>
-                  <button onClick={handleAddDomain}>Add Object</button>
+                  <button
+                    className="bg-lime-300 h-10 w-100"
+                    onClick={handleAddDomain}
+                  >
+                    Click To Add Domain URL
+                  </button>
                 </div>
               </div>
             </DialogPanel>

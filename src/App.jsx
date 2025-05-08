@@ -9,7 +9,7 @@ function App() {
   return (
     <div>
       <Drawer open={open} setOpen={setOpen} />
-      <ObjectList setOpen={setOpen} />;
+      <ObjectList setOpen={setOpen} />
     </div>
   );
 }

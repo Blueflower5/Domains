@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchObjects, updateObject, deleteObject } from "./objectSlice";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 
 const ObjectList = ({ setOpen }) => {
   const dispatch = useDispatch();
@@ -48,37 +49,39 @@ const ObjectList = ({ setOpen }) => {
 
   return (
     <>
-      <div className="text-center text-yellow-500 font-semibold uppercase text-2xl">
-        Domains
+      <div className="text-center text-orange-500 font-semibold uppercase text-3xl">
+        هدف پلاس
       </div>
-      <div className="flex space-x-2">
+      <div className="mt-10 flex items-center justify-between bg-sky-500  ">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search domains..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 p-2 border border-gray-300 text-xs md:text-base"
+          />
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+        </div>
+
         <button
           onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-          className="bg-gray-300 px-4 py-2"
+          className=" px-4 py-2 border border-gray-800 text-xs md:text-base"
         >
           Sort by Name ({sortOrder === "asc" ? "Descending" : "Ascending"})
         </button>
-
-        {/* Search Bar */}
-        <input
-          type="text"
-          placeholder="Search domains..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="bg-gray-300 px-4 py-2"
-        />
         <button
           onClick={() => setOpen(true)}
-          className="bg-blue-500 text-white px-4 py-2 ml-auto"
+          className=" text-white px-4 py-2 ml-auto bg-pink-300 text-xs md:text-base"
         >
           ADD DOMAIN
         </button>
       </div>
-
-      {/* Domain Input Validation */}
-      <h1 className="text-center text-blue-100 font-semibold text-xl bg-yellow-100 uppercase tracking-[5px]">
-        Objects List
-      </h1>
+      <div className="bg-sky-700 mt-10">
+        <h1 className=" text-center text-white font-semibold text-3xl bg-yellow-400 uppercase tracking-[5px]">
+          Domains List
+        </h1>
+      </div>
 
       {/* <input
         type="text"
@@ -90,16 +93,69 @@ const ObjectList = ({ setOpen }) => {
         {errorMessage}
       </p>
       <button onClick={handleAddDomain}>Add Object</button> */}
-
       {/* Filtered & Sorted Domains */}
-      <div
+      <div className="overflow-y-auto max-h-[600px]">
+        <table
+          className="table-fixed border-collapse border border-gray-300 w-full table-layout: auto 
+        text-gray-300"
+        >
+          <thead className="sticky top-0 z-10">
+            <tr className="bg-orange-500 ">
+              <th className="text-left p-2 text-sm md:text-base">Domain URL</th>
+              <th className="p-2 text-sm md:text-base">Verification</th>
+              <th className="p-2 text-sm md:text-base">Activation</th>
+              <th className="text-right p-2 text-sm md:text-base">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sortedObjects.length > 0 ? (
+              sortedObjects.map((obj) => (
+                <tr
+                  key={obj.id}
+                  className="border border-gray-300 bg-slate-700"
+                >
+                  <td className="p-2 text-sm md:text-base">{obj.domain}</td>
+                  <td className="text-center p-2 text-sm md:text-base">
+                    {obj.status}
+                  </td>
+                  <td className="text-center p-2 text-sm md:text-base">
+                    {obj.isActive ? "Yes" : "No"}
+                  </td>
+                  <td className="text-right p-2">
+                    <button
+                      className="bg-green-500 text-white px-2 py-1 rounded mr-2 text-xs md:text-base"
+                      onClick={() => handleUpdate(obj)}
+                    >
+                      Verify
+                    </button>
+
+                    <button
+                      className="bg-red-500 text-white px-2 py-1 rounded text-xs md:text-base"
+                      onClick={() => dispatch(deleteObject(obj.id))}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" className="text-center p-2 bg-red-600">
+                  No matching domains found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      {/* <div
         style={{
           marginTop: "20px",
           padding: "10px",
-          border: "1px solid gray",
+          // border: "1px solid gray",
         }}
       >
-        <h3>Filtered & Sorted Domains:</h3>
+        <h3></h3>
         {sortedObjects.length > 0 ? (
           <ul>
             {sortedObjects.map((obj) => (
@@ -123,7 +179,7 @@ const ObjectList = ({ setOpen }) => {
         ) : (
           <p>No matching domains found.</p>
         )}
-      </div>
+      </div> */}
     </>
   );
 };
