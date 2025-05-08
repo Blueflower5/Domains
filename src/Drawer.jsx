@@ -26,6 +26,7 @@ export default function Drawer({ open, setOpen }) {
         : "❌ لطفا آدرس را به صورت صحیح وارد کنید"
     );
   };
+
   const handleAddDomain = () => {
     if (userUrl.trim() === "" || !urlRegex.test(userUrl)) {
       alert("Please enter a valid domain URL.");
@@ -42,41 +43,41 @@ export default function Drawer({ open, setOpen }) {
     setUserUrl(""); // Clear input after adding
     setErrorMessage(""); // Reset validation message
   };
+
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       handleAddDomain(); // Trigger the add domain action on Enter key press
     }
   };
+
   return (
     <Dialog open={open} onClose={setOpen} className="relative z-10">
-      <DialogBackdrop
-        transition
-        className="fixed inset-0 bg-gray-500/75 transition-opacity duration-500 ease-in-out data-closed:opacity-0"
-      />
+      {/* Backdrop */}
+      <DialogBackdrop className="fixed inset-0 bg-gray-400/75" />
 
-      <div className="fixed inset-0 overflow-hidden ">
-        <div className="absolute inset-0 overflow-hidden ">
-          <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10 ">
-            <DialogPanel
-              transition
-              className="pointer-events-auto relative w-screen max-w-md transform transition duration-500 ease-in-out data-closed:translate-x-full sm:duration-700"
-            >
+      {/* Drawer Container */}
+      <div className="fixed inset-0 overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
+            {/* Drawer Panel */}
+            <DialogPanel className="pointer-events-auto relative w-screen max-w-md transform transition duration-500 ease-in-out bg-gray-800 text-white shadow-xl">
+              {/* Close Button */}
               <TransitionChild>
-                <div className="absolute top-0 left-0 -ml-8 flex pt-4 pr-2 duration-500 ease-in-out data-closed:opacity-0 sm:-ml-10 sm:pr-4">
+                <div className="absolute top-0 left-0 -ml-8 flex pt-4 pr-2">
                   <button
                     type="button"
                     onClick={() => setOpen(false)}
-                    className=" relative rounded-md text-gray-300 hover:text-white focus:ring-2 focus:ring-white focus:outline-hidden"
+                    className="rounded-md text-gray-300 hover:text-white focus:ring-2 focus:ring-white"
                   >
-                    <span className="absolute -inset-2.5" />
-                    <span className="sr-only">Close panel</span>
                     <XMarkIcon aria-hidden="true" className="size-6" />
                   </button>
                 </div>
               </TransitionChild>
-              <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl ">
+
+              {/* Drawer Content */}
+              <div className="flex h-full flex-col overflow-y-scroll py-6">
                 <div className="px-4 sm:px-6">
-                  <DialogTitle className="text-3xl font-semibold text-cyan-300 h-10 text-center  ">
+                  <DialogTitle className="text-3xl font-semibold text-cyan-300 h-10 text-center">
                     Add Domain
                   </DialogTitle>
                 </div>
@@ -87,18 +88,32 @@ export default function Drawer({ open, setOpen }) {
                     value={userUrl}
                     onChange={handleInputChange}
                     onKeyDown={handleKeyPress}
-                    tabIndex="0"
-                    className="bg-ray-400 h-10 w-100 text-lg bg-teal-400"
+                    className="bg-teal-400 h-10 w-full text-lg px-2"
                   />
                   <p
-                    style={{
-                      color: errorMessage.includes("Invalid") ? "red" : "green",
-                    }}
+                    className={
+                      errorMessage.includes("Invalid")
+                        ? "text-red-500"
+                        : "text-green-500"
+                    }
                   >
                     {errorMessage}
                   </p>
+                </div>
+
+                {/* Buttons at the Bottom */}
+                <div className="absolute bottom-0 left-0 right-0 flex justify-between px-6 py-4 bg-gray-700">
+                  {/* Cancel Button (Left) */}
                   <button
-                    className="bg-lime-300 h-10 w-100"
+                    className="bg-red-500 text-white px-4 py-2 rounded text-lg"
+                    onClick={() => setOpen(false)}
+                  >
+                    Cancel
+                  </button>
+
+                  {/* Add Button (Right) */}
+                  <button
+                    className="bg-green-500 text-white px-4 py-2 rounded text-lg"
                     onClick={handleAddDomain}
                   >
                     ADD
