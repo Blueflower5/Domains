@@ -10,6 +10,7 @@ const ObjectList = ({ setOpen }) => {
   // States
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState("asc");
+
   // Filter objects based on searchQuery
   const filteredObjects = objects.filter((domain) =>
     domain.domain.toLowerCase().includes(searchQuery.toLowerCase())
@@ -21,24 +22,21 @@ const ObjectList = ({ setOpen }) => {
       ? a.domain.localeCompare(b.domain)
       : b.domain.localeCompare(a.domain)
   );
+
   useEffect(() => {
     dispatch(fetchObjects());
   }, [dispatch]);
 
-  // Handle domain creation (Starts as "Not Verified")
-
-  // Handle updating object status (Pending → Verified based on domain availability)
+  // Handle updating object status
   const handleUpdate = async (obj) => {
     dispatch(updateObject({ ...obj, status: "Pending" }));
 
     try {
-      // Try fetching the domain directly
       const response = await fetch(obj.domain, {
         method: "GET",
         mode: "no-cors",
       });
 
-      // If the request succeeds, mark domain as active
       dispatch(
         updateObject({ ...obj, status: "Verified", isActive: response.ok })
       );
@@ -48,91 +46,66 @@ const ObjectList = ({ setOpen }) => {
   };
 
   return (
-    <>
-      <div className="text-center text-orange-500 font-semibold uppercase text-3xl">
-        هدف پلاس
-      </div>
-      <div className="mt-10 flex items-center justify-between ">
-        <div className="relative">
+    <div className="min-h-screen flex flex-col items-center justify-start p-6 bg-gray-100">
+      {/* Title */}
+      <h1 className="text-center text-gray-700 font-medium text-2xl">
+        Domain Manager
+      </h1>
+
+      {/* Search & Actions */}
+      <div className="mt-6 flex items-center justify-between gap-4 w-full max-w-4xl">
+        <div className="relative flex-1">
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
           <input
             type="text"
             placeholder="Search domains..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 p-2 border border-gray-300 text-xs md:text-base bg-slate-500 text-white"
+            className="w-full pl-10 pr-4 py-2 border rounded-md text-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-400"
           />
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
         </div>
 
         <button
           onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-          className=" px-4 py-2 border border-gray-800 text-xs md:text-base bg-gray-600 text-white"
+          className="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-100"
         >
-          Sort by Name ({sortOrder === "asc" ? "Descending" : "Ascending"})
+          Sort ({sortOrder === "asc" ? "Descending" : "Ascending"})
         </button>
+
         <button
           onClick={() => setOpen(true)}
-          className=" text-white px-4 py-2 ml-auto bg-cyan-300 text-xs md:text-base"
+          className="px-4 py-2 border rounded-md bg-gray-700 text-white hover:bg-gray-600"
         >
-          ADD DOMAIN
+          Add Domain
         </button>
       </div>
-      <div className=" mt-10">
-        <h1 className=" text-center  font-semibold text-3xl uppercase tracking-[5px]">
-          Domains List
-        </h1>
-      </div>
 
-      {/* <input
-        type="text"
-        placeholder="Enter domain URL"
-        value={userUrl}
-        onChange={handleInputChange}
-      />
-      <p style={{ color: errorMessage.includes("Invalid") ? "red" : "green" }}>
-        {errorMessage}
-      </p>
-      <button onClick={handleAddDomain}>Add Object</button> */}
-      {/* Filtered & Sorted Domains */}
-      <div className="overflow-y-auto max-h-[600px] flex justify-between">
-        <table
-          className="table-fixed border-collapse border border-gray-300 w-full table-layout: auto 
-        text-gray-300"
-        >
-          <thead className="sticky top-0 z-10 ">
-            <tr className="bg-teal-500 ">
-              <th className="text-left p-2 text-sm md:text-base w-1/2  ">
-                Domain URL
-              </th>
-              <th className="p-2 text-right text-sm md:text-base w-1/6 ">
-                Verification
-              </th>
-              <th className="p-2 text-right text-sm md:text-base w-1/6 ">
-                Activation
-              </th>
-              <th className="text-right p-2 text-sm md:text-base w-1/6 ">
-                Actions
-              </th>
+      {/* Table */}
+      <div className="mt-6 overflow-x-auto w-full max-w-4xl">
+        <table className="w-full border-collapse border border-gray-300 text-gray-700">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="text-left p-2 text-sm w-1/2">Domain URL</th>
+              <th className="p-2 text-sm w-1/6 text-center">Verification</th>
+              <th className="p-2 text-sm w-1/6 text-center">Activation</th>
+              <th className="p-2 text-sm w-1/6 text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
             {sortedObjects.length > 0 ? (
               sortedObjects.map((obj) => (
-                <tr
-                  key={obj.id}
-                  className="border border-gray-300 bg-slate-700"
-                >
+                <tr key={obj.id} className="border-t border-gray-300">
                   <td
-                    className={`p-2 text-sm md:text-base break-words ${
+                    className={`p-2 text-sm break-words ${
                       obj.status === "Verified" && obj.isActive
-                        ? "text-green-700 font-bold"
-                        : "text-white"
+                        ? "text-green-600 font-medium"
+                        : "text-gray-700"
                     }`}
                   >
                     {obj.domain}
                   </td>
                   <td
-                    className={`text-center p-2 text-sm md:text-base text-right ${
+                    className={`p-2 text-sm text-center ${
                       obj.status === "Verified"
                         ? "text-green-500"
                         : "text-red-500"
@@ -141,35 +114,33 @@ const ObjectList = ({ setOpen }) => {
                     {obj.status}
                   </td>
                   <td
-                    className={`text-center p-2 text-sm md:text-base text-right ${
+                    className={`p-2 text-sm text-center ${
                       obj.isActive ? "text-green-500" : "text-red-500"
                     }`}
                   >
                     {obj.isActive ? "Yes" : "No"}
                   </td>
-                  <td className="text-right p-2">
-                    <button
-                      className="bg-green-500 text-white px-2 py-1 rounded mr-2 text-xs md:text-base"
-                      onClick={() => handleUpdate(obj)}
-                    >
-                      Verify
-                    </button>
-
-                    <button
-                      className="bg-red-500 text-white px-2 py-1 rounded text-xs md:text-base"
-                      onClick={() => dispatch(deleteObject(obj.id))}
-                    >
-                      Delete
-                    </button>
+                  <td className="p-2 text-sm text-center">
+                    <div className="flex justify-center gap-2">
+                      <button
+                        className="px-3 py-1 border rounded-md text-gray-700 hover:bg-gray-100"
+                        onClick={() => handleUpdate(obj)}
+                      >
+                        Verify
+                      </button>
+                      <button
+                        className="px-3 py-1 border rounded-md text-red-500 hover:bg-red-100"
+                        onClick={() => dispatch(deleteObject(obj.id))}
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td
-                  colSpan="4"
-                  className="text-center p-2 text-red-600 bg-cyan-950"
-                >
+                <td colSpan="4" className="text-center p-2 text-gray-500">
                   No matching domains found.
                 </td>
               </tr>
@@ -177,39 +148,7 @@ const ObjectList = ({ setOpen }) => {
           </tbody>
         </table>
       </div>
-      {/* <div
-        style={{
-          marginTop: "20px",
-          padding: "10px",
-          // border: "1px solid gray",
-        }}
-      >
-        <h3></h3>
-        {sortedObjects.length > 0 ? (
-          <ul>
-            {sortedObjects.map((obj) => (
-              <li key={obj.id}>
-                <strong>Domain:</strong> {obj.domain} | <strong>Status:</strong>{" "}
-                {obj.status} |<strong>Active:</strong>{" "}
-                {obj.isActive ? "Yes" : "No"}
-                <button
-                  onClick={() =>
-                    dispatch(updateObject({ ...obj, status: "Updated Status" }))
-                  }
-                >
-                  Update
-                </button>
-                <button onClick={() => dispatch(deleteObject(obj.id))}>
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No matching domains found.</p>
-        )}
-      </div> */}
-    </>
+    </div>
   );
 };
 
